@@ -5,9 +5,15 @@ const User = require("../models/User");
 // When user register, waiting for approval (PENDING -> JVCNUMBER)
 router.post("/register", async (req, res) => {
     try {
-        const { name, email, pasword, phonenumber } = req.body;
-        if (!name || !email || !pasword || !phonenumber) {
+        const { name, email, password, phoneNumber } = req.body;
+        if (!name) {
             return res.status(400).json({ message: "name, email, password and phone number required"});
+    }   else if (!email){
+            return res.status(400).json({message : "email required"})
+    }    else if (!password){
+            return res.status(400).json({message : "password required"})
+    }   else if (!phoneNumber){
+            return res.status(400).json({message : "phone no required"})
     }
 
     const exists = await User.findOne({ email });
@@ -19,6 +25,7 @@ router.post("/register", async (req, res) => {
         name,
         email,
         passwordHash,
+        phoneNumber,
         ststus : "PENDING",
         band : "MEMBER",
         jvcNumber : null,
@@ -26,7 +33,7 @@ router.post("/register", async (req, res) => {
 
     res.status(201).json({
         message : "Registered Successfully. Please wait for approval.",
-        userId : user_id,
+        userId : user._id,
         status : user.status,
     });
     }catch (err) {
