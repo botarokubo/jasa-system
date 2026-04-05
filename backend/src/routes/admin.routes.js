@@ -31,13 +31,25 @@ router.post("/approve-user", async (req, res) => {
 
     user.status = "ACTIVE";
     user.band = band;
-    user.jvcNumber = jvcNumber;
+    user.jvcnumber = jvcNumber;
     await user.save();
 
     return res.json({ message: "Approved", userId: user._id, jvcNumber, band: user.band });
   } catch (err) {
     return res.status(400).json({ message: err.message });
   }
+});
+
+router.get("/users", async (req, res) => {
+  try {
+    const users = await User.find()
+        .select("name email status band jvcnumber createdAt")
+        .sort({ createdAt: -1 });
+
+    res.json(users);
+} catch (err) {
+    res.status(500).json({ message: err.message });
+}
 });
 
 module.exports = router;
